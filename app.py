@@ -16,14 +16,14 @@ load_dotenv()
 
 # Page configuration
 st.set_page_config(
-    page_title="AI Guardrails Dashboard",
+    page_title="IBM Building Block for Trusted AI: Guardrails",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # App title and description
-st.title("🛡️ AI Guardrails Dashboard")
+st.title("🛡️ IBM Building Block for Trusted AI: Guardrails")
 st.markdown("**Powered by IBM watsonx.governance** | Evaluate text content for safety and quality metrics")
 
 # Initialize session state
@@ -149,6 +149,22 @@ def get_advanced_metrics():
         }
     }
 
+def transform_results_to_rows(df):
+    """Transform results from columns to rows format"""
+    if df.empty:
+        return df
+    
+    # Convert the dataframe from wide format (metrics as columns) to long format (metrics as rows)
+    results_list = []
+    for column in df.columns:
+        value = df[column].iloc[0] if len(df) > 0 else None
+        results_list.append({
+            'Metric': column.replace('.granite_guardian', '').replace('_', ' ').title(),
+            'Score': value if pd.notna(value) else 0.0
+        })
+    
+    return pd.DataFrame(results_list)
+
 def style_results_table(df, threshold):
     """Apply color coding to results based on threshold"""
     def highlight_high_risk(val):
@@ -164,7 +180,8 @@ def style_results_table(df, threshold):
         except (ValueError, TypeError):
             return ''
     
-    return df.style.applymap(highlight_high_risk)
+    # Only apply styling to the Score column
+    return df.style.applymap(highlight_high_risk, subset=['Score'])
 
 # Sidebar - Guardrail Selection
 st.sidebar.header("🛡️ Select Guardrails")
@@ -370,8 +387,9 @@ if st.session_state.results is not None:
         # Compact info line
         st.caption(f"Risk threshold: {threshold} | Values ≥{threshold} highlighted in red | Text: \"{st.session_state.evaluated_text[:50]}...\"")
         
-        # Style and display the compact table
-        styled_df = style_results_table(results_df, threshold)
+        # Transform and display the results table (metrics as rows)
+        row_format_df = transform_results_to_rows(results_df)
+        styled_df = style_results_table(row_format_df, threshold)
         st.dataframe(styled_df, use_container_width=True, height=200)
         
     else:
