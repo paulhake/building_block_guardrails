@@ -245,6 +245,9 @@ guardrails_v2/
 ├── README.md                      # This file
 ├── requirements.txt               # Python dependencies
 ├── app.py                         # Streamlit web application
+├── assets/                        # Visual assets and branding
+│   ├── logo.png                   # IBM Building Blocks AI Guardrails logo
+│   └── README.md                  # Assets documentation
 └── Real Time Detections_v1.ipynb # Jupyter notebook demonstration
 ```
 
