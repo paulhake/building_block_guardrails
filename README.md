@@ -1,4 +1,8 @@
-# AI Guardrails Project v2
+<div align="center">
+  <img src="assets/logo.png" alt="IBM Building Blocks AI Guardrails" width="300"/>
+</div>
+
+# IBM Building Block for Trusted AI: Guardrails
 
 An advanced AI guardrails implementation using IBM watsonx.governance SDK for comprehensive AI safety evaluation and monitoring.
 
