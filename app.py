@@ -220,6 +220,50 @@ user_text = st.text_area(
     help="Enter the text content you want to analyze with AI guardrails"
 )
 
+# Check if RAG or Advanced metrics are selected
+rag_selected = any(metric_info in selected_metrics for metric_info in rag_metrics.values())
+advanced_selected = any(metric_info in selected_metrics for metric_info in advanced_metrics.values())
+needs_advanced_options = rag_selected or advanced_selected
+
+# Initialize advanced options variables
+system_prompt = ""
+context_text = ""
+generated_text = ""
+
+# Show advanced options only if RAG or Advanced metrics are selected
+if needs_advanced_options:
+    with st.expander("🔧 Advanced Options", expanded=True):
+        col_a, col_b = st.columns(2)
+        
+        with col_a:
+            if advanced_selected:
+                system_prompt = st.text_area(
+                    "System Prompt (for Topic Relevance & Prompt Safety):",
+                    height=80,
+                    placeholder="Required for advanced metrics...",
+                    help="Required for Topic Relevance and Prompt Safety Risk metrics"
+                )
+        
+        with col_b:
+            if rag_selected:
+                context_text = st.text_area(
+                    "Context (for RAG metrics):",
+                    height=80,
+                    placeholder="Optional: Enter context for RAG evaluation...",
+                    help="Required for Answer Relevance, Context Relevance, and Faithfulness metrics"
+                )
+                
+                generated_text = st.text_input(
+                    "Generated Response (for RAG metrics):",
+                    placeholder="Optional: Enter AI-generated response...",
+                    help="Required for RAG metrics evaluation"
+                )
+
+# Advanced validation for button state
+can_run = user_text and selected_metrics
+if advanced_selected and not system_prompt:
+    can_run = False
+
 # Buttons row
 col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
 
@@ -228,7 +272,7 @@ with col_btn1:
         "🚀 Run Guardrails", 
         type="primary", 
         use_container_width=True,
-        disabled=not user_text or not selected_metrics
+        disabled=not can_run
     )
 
 with col_btn2:
@@ -236,32 +280,6 @@ with col_btn2:
         st.session_state.results = None
         st.session_state.evaluated_text = ""
         st.rerun()
-
-# Advanced options expander
-with st.expander("🔧 Advanced Options"):
-    col_a, col_b = st.columns(2)
-    
-    with col_a:
-        system_prompt = st.text_area(
-            "System Prompt (for Topic Relevance & Prompt Safety):",
-            height=80,
-            placeholder="Optional: Enter system prompt for advanced metrics...",
-            help="Required for Topic Relevance and Prompt Safety Risk metrics"
-        )
-    
-    with col_b:
-        context_text = st.text_area(
-            "Context (for RAG metrics):",
-            height=80,
-            placeholder="Optional: Enter context for RAG evaluation...",
-            help="Required for Answer Relevance, Context Relevance, and Faithfulness metrics"
-        )
-        
-        generated_text = st.text_input(
-            "Generated Response (for RAG metrics):",
-            placeholder="Optional: Enter AI-generated response...",
-            help="Required for RAG metrics evaluation"
-        )
 
 
 # Results section
