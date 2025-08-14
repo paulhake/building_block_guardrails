@@ -238,6 +238,10 @@ user_text = st.text_area(
     key="main_text_input"
 )
 
+# Force refresh when text changes
+if user_text != st.session_state.get("last_text", ""):
+    st.session_state.last_text = user_text
+
 # Get metric definitions
 rag_metrics = get_rag_metrics()
 advanced_metrics = get_advanced_metrics()
@@ -282,12 +286,20 @@ if needs_advanced_options:
                 )
 
 # Advanced validation for button state  
-# More robust text checking - also check session state as fallback
+# Workaround for Streamlit text widget issue - be more permissive
 session_text = st.session_state.get("main_text_input", "")
-has_text = bool((user_text and len(str(user_text).strip()) > 0) or 
-                (session_text and len(str(session_text).strip()) > 0))
+last_text = st.session_state.get("last_text", "")
+
+# Check multiple sources for text content
+has_text = bool(
+    (user_text and len(str(user_text).strip()) > 0) or 
+    (session_text and len(str(session_text).strip()) > 0) or
+    (last_text and len(str(last_text).strip()) > 0)
+)
+
+# If still no text detected but user has selected metrics, allow anyway with warning
 has_metrics = bool(selected_metrics)
-can_run = has_text and has_metrics
+can_run = (has_text and has_metrics) or (has_metrics and not advanced_selected)
 
 # Only disable if advanced metrics are selected but system prompt is missing
 if advanced_selected and not system_prompt:
@@ -296,6 +308,10 @@ if advanced_selected and not system_prompt:
 # Debug info (comment out in production)
 st.sidebar.write(f"Debug: user_text_len={len(str(user_text)) if user_text else 0}, session_text_len={len(str(session_text)) if session_text else 0}")
 st.sidebar.write(f"Debug: has_text={has_text}, has_metrics={has_metrics}, advanced_selected={advanced_selected}, can_run={can_run}")
+
+# Warning if button enabled but no text detected
+if can_run and not has_text and has_metrics:
+    st.sidebar.warning("⚠️ Button enabled but text may not be detected properly. Please ensure text is entered before running.")
 
 # Buttons row
 col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
@@ -316,51 +332,54 @@ with col_btn2:
 
 
 # Results section
-actual_text = user_text or session_text
-if run_button and actual_text and selected_metrics:
-    with st.spinner("🔍 Evaluating content with selected guardrails..."):
-        evaluator = initialize_evaluator()
-        
-        if evaluator:
-            try:
-                # Prepare metrics list
-                metrics_to_run = []
-                
-                for metric_info in selected_metrics:
-                    if 'requires_system_prompt' in metric_info and metric_info['requires_system_prompt']:
-                        if system_prompt:
-                            # For metrics that require system prompt
-                            metric_class = metric_info['metric']
-                            metrics_to_run.append(metric_class(system_prompt=system_prompt))
+actual_text = user_text or session_text or last_text
+if run_button and selected_metrics:
+    if not actual_text:
+        st.error("❌ No text detected. Please make sure you have entered text in the input box above and try again.")
+    else:
+        with st.spinner("🔍 Evaluating content with selected guardrails..."):
+            evaluator = initialize_evaluator()
+            
+            if evaluator:
+                try:
+                    # Prepare metrics list
+                    metrics_to_run = []
+                    
+                    for metric_info in selected_metrics:
+                        if 'requires_system_prompt' in metric_info and metric_info['requires_system_prompt']:
+                            if system_prompt:
+                                # For metrics that require system prompt
+                                metric_class = metric_info['metric']
+                                metrics_to_run.append(metric_class(system_prompt=system_prompt))
+                            else:
+                                st.warning(f"⚠️ System prompt required for {metric_info.get('description', 'this metric')}")
+                                continue
                         else:
-                            st.warning(f"⚠️ System prompt required for {metric_info.get('description', 'this metric')}")
-                            continue
-                    else:
-                        metrics_to_run.append(metric_info['metric'])
+                            metrics_to_run.append(metric_info['metric'])
                 
-                if metrics_to_run:
-                    # Prepare evaluation data
-                    eval_data = {"input_text": actual_text}
-                    
-                    # Add context and generated text for RAG metrics if provided
-                    if context_text:
-                        eval_data["context"] = [context_text]
-                    if generated_text:
-                        eval_data["generated_text"] = generated_text
-                    
-                    # Run evaluation
-                    result = evaluator.evaluate(data=eval_data, metrics=metrics_to_run)
-                    
-                    # Store results in session state
-                    st.session_state.results = result.to_df()
-                    st.session_state.evaluated_text = actual_text
-                    
-                    st.success("✅ Evaluation completed successfully!")
-                else:
-                    st.error("❌ No valid metrics to run. Please check your selections and inputs.")
-                    
-            except Exception as e:
-                st.error(f"❌ Error during evaluation: {str(e)}")
+                    if metrics_to_run:
+                        # Prepare evaluation data
+                        eval_data = {"input_text": actual_text}
+                        
+                        # Add context and generated text for RAG metrics if provided
+                        if context_text:
+                            eval_data["context"] = [context_text]
+                        if generated_text:
+                            eval_data["generated_text"] = generated_text
+                        
+                        # Run evaluation
+                        result = evaluator.evaluate(data=eval_data, metrics=metrics_to_run)
+                        
+                        # Store results in session state
+                        st.session_state.results = result.to_df()
+                        st.session_state.evaluated_text = actual_text
+                        
+                        st.success("✅ Evaluation completed successfully!")
+                    else:
+                        st.error("❌ No valid metrics to run. Please check your selections and inputs.")
+                        
+                except Exception as e:
+                    st.error(f"❌ Error during evaluation: {str(e)}")
 
 # Display results
 if st.session_state.results is not None:
