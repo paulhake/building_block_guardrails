@@ -280,11 +280,17 @@ if needs_advanced_options:
                     help="Required for RAG metrics evaluation"
                 )
 
-# Advanced validation for button state
-can_run = user_text and selected_metrics
+# Advanced validation for button state  
+has_text = bool(user_text and user_text.strip())
+has_metrics = bool(selected_metrics)
+can_run = has_text and has_metrics
+
 # Only disable if advanced metrics are selected but system prompt is missing
 if advanced_selected and not system_prompt:
     can_run = False
+
+# Debug info (comment out in production)
+st.sidebar.write(f"Debug: has_text={has_text}, has_metrics={has_metrics}, advanced_selected={advanced_selected}, can_run={can_run}")
 
 # Buttons row
 col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
