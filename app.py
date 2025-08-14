@@ -281,7 +281,8 @@ if needs_advanced_options:
                 )
 
 # Advanced validation for button state  
-has_text = bool(user_text and user_text.strip())
+# More robust text checking
+has_text = bool(user_text and len(str(user_text).strip()) > 0)
 has_metrics = bool(selected_metrics)
 can_run = has_text and has_metrics
 
@@ -290,6 +291,7 @@ if advanced_selected and not system_prompt:
     can_run = False
 
 # Debug info (comment out in production)
+st.sidebar.write(f"Debug: user_text_len={len(str(user_text)) if user_text else 0}, user_text_repr='{repr(user_text)}'")
 st.sidebar.write(f"Debug: has_text={has_text}, has_metrics={has_metrics}, advanced_selected={advanced_selected}, can_run={can_run}")
 
 # Buttons row
