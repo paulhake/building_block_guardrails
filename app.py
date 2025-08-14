@@ -305,13 +305,13 @@ can_run = (has_text and has_metrics) or (has_metrics and not advanced_selected)
 if advanced_selected and not system_prompt:
     can_run = False
 
-# Debug info (comment out in production)
-st.sidebar.write(f"Debug: user_text_len={len(str(user_text)) if user_text else 0}, session_text_len={len(str(session_text)) if session_text else 0}")
-st.sidebar.write(f"Debug: has_text={has_text}, has_metrics={has_metrics}, advanced_selected={advanced_selected}, can_run={can_run}")
+# Debug info (commented out for production)
+# st.sidebar.write(f"Debug: user_text_len={len(str(user_text)) if user_text else 0}, session_text_len={len(str(session_text)) if session_text else 0}")
+# st.sidebar.write(f"Debug: has_text={has_text}, has_metrics={has_metrics}, advanced_selected={advanced_selected}, can_run={can_run}")
 
-# Warning if button enabled but no text detected
-if can_run and not has_text and has_metrics:
-    st.sidebar.warning("⚠️ Button enabled but text may not be detected properly. Please ensure text is entered before running.")
+# Warning if button enabled but no text detected (only show in development)
+# if can_run and not has_text and has_metrics:
+#     st.sidebar.warning("⚠️ Button enabled but text may not be detected properly. Please ensure text is entered before running.")
 
 # Buttons row
 col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
