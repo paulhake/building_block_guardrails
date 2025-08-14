@@ -220,6 +220,10 @@ user_text = st.text_area(
     help="Enter the text content you want to analyze with AI guardrails"
 )
 
+# Get metric definitions
+rag_metrics = get_rag_metrics()
+advanced_metrics = get_advanced_metrics()
+
 # Check if RAG or Advanced metrics are selected
 rag_selected = any(metric_info in selected_metrics for metric_info in rag_metrics.values())
 advanced_selected = any(metric_info in selected_metrics for metric_info in advanced_metrics.values())
@@ -261,6 +265,7 @@ if needs_advanced_options:
 
 # Advanced validation for button state
 can_run = user_text and selected_metrics
+# Only disable if advanced metrics are selected but system prompt is missing
 if advanced_selected and not system_prompt:
     can_run = False
 
@@ -374,4 +379,4 @@ if st.session_state.results is not None:
 
 # Footer
 st.markdown("---")
-st.caption("Built with Streamlit and IBM watsonx.governance | Ensure .env file contains valid credentials")
+st.caption("Built with Streamlit and IBM watsonx.governance | [📚 SDK Documentation](https://ibm.github.io/ibm-watsonx-gov/index.html) | Ensure .env file contains valid credentials")
