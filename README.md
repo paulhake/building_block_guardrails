@@ -101,9 +101,9 @@ WXG_SERVICE_INSTANCE_ID=your_service_instance_id_here
 **Security Note**: Never commit the `.env` file to version control. It's already included in `.gitignore`.
 
 ### 5. Verify Installation
-Start Jupyter and run the configuration notebook:
+Start Jupyter and run the main notebook:
 ```bash
-jupyter notebook api_config.ipynb
+jupyter notebook "Real Time Detections_v1.ipynb"
 ```
 
 ## Usage
@@ -136,9 +136,6 @@ print(result.to_df())
 ```
 
 ### Available Notebooks
-
-#### `api_config.ipynb`
-Basic API configuration and connection testing.
 
 #### `Real Time Detections_v1.ipynb`
 Comprehensive demonstration of all available guardrail metrics including:
@@ -212,7 +209,6 @@ guardrails_v2/
 ├── CLAUDE.md                      # AI assistant instructions
 ├── README.md                      # This file
 ├── requirements.txt               # Python dependencies
-├── api_config.ipynb              # Basic API configuration
 └── Real Time Detections_v1.ipynb # Main guardrails demonstration
 ```
 
