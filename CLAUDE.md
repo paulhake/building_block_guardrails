@@ -8,10 +8,27 @@ This is an AI guardrails project (version 2) that integrates with IBM watsonx se
 
 ## Technology Stack
 
-- **Primary Language**: Python (expected)
+- **Primary Language**: Python
 - **Development Environment**: Jupyter Notebooks
 - **AI Platform**: IBM watsonx
+- **Governance SDK**: IBM watsonx.governance SDK
 - **Configuration**: Environment-based (.env file)
+
+## API Documentation
+
+**Primary Reference**: [IBM watsonx.governance API Documentation](https://ibm.github.io/ibm-watsonx-gov/index.html)
+
+The watsonx.governance SDK provides comprehensive AI governance and evaluation tools with 25+ metrics including:
+- Answer Relevance
+- Harm Detection  
+- Jailbreak Prevention
+- Social Bias Assessment
+- Prompt Safety Risk
+
+Key SDK modules:
+- **Metrics**: Evaluation metrics for AI system assessment
+- **Entities**: Foundation Models, AI Experiments, Monitors, Credentials
+- **Evaluators**: Agentic, Metrics, and Model Risk evaluators
 
 ## IBM watsonx Configuration
 
@@ -30,11 +47,19 @@ Currently minimal structure:
 
 ## Development Commands
 
-**Note**: This project lacks standard development tooling. Common commands will need to be established as the project develops.
-
 Expected development workflow:
+- Install watsonx governance SDK: `pip install 'ibm-watsonx-gov[metrics]'`
 - Start Jupyter notebook server: `jupyter notebook` or `jupyter lab`
-- Install Python dependencies: `pip install -r requirements.txt` (once created)
+- Install additional dependencies: `pip install -r requirements.txt` (once created)
+
+## SDK Installation
+
+The project requires the IBM watsonx.governance SDK for AI evaluation and monitoring capabilities. Install with:
+```bash
+pip install 'ibm-watsonx-gov[metrics]'
+```
+
+**Note**: Use quotes around the package name with extras to avoid shell interpretation issues in zsh.
 
 ## Architecture Notes
 
