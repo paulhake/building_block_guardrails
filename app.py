@@ -234,7 +234,8 @@ user_text = st.text_area(
     "Enter text to evaluate:",
     height=120,
     placeholder="Type or paste your text here...",
-    help="Enter the text content you want to analyze with AI guardrails"
+    help="Enter the text content you want to analyze with AI guardrails",
+    key="main_text_input"
 )
 
 # Get metric definitions
@@ -281,8 +282,10 @@ if needs_advanced_options:
                 )
 
 # Advanced validation for button state  
-# More robust text checking
-has_text = bool(user_text and len(str(user_text).strip()) > 0)
+# More robust text checking - also check session state as fallback
+session_text = st.session_state.get("main_text_input", "")
+has_text = bool((user_text and len(str(user_text).strip()) > 0) or 
+                (session_text and len(str(session_text).strip()) > 0))
 has_metrics = bool(selected_metrics)
 can_run = has_text and has_metrics
 
@@ -291,7 +294,7 @@ if advanced_selected and not system_prompt:
     can_run = False
 
 # Debug info (comment out in production)
-st.sidebar.write(f"Debug: user_text_len={len(str(user_text)) if user_text else 0}, user_text_repr='{repr(user_text)}'")
+st.sidebar.write(f"Debug: user_text_len={len(str(user_text)) if user_text else 0}, session_text_len={len(str(session_text)) if session_text else 0}")
 st.sidebar.write(f"Debug: has_text={has_text}, has_metrics={has_metrics}, advanced_selected={advanced_selected}, can_run={can_run}")
 
 # Buttons row
@@ -313,7 +316,8 @@ with col_btn2:
 
 
 # Results section
-if run_button and user_text and selected_metrics:
+actual_text = user_text or session_text
+if run_button and actual_text and selected_metrics:
     with st.spinner("🔍 Evaluating content with selected guardrails..."):
         evaluator = initialize_evaluator()
         
@@ -336,7 +340,7 @@ if run_button and user_text and selected_metrics:
                 
                 if metrics_to_run:
                     # Prepare evaluation data
-                    eval_data = {"input_text": user_text}
+                    eval_data = {"input_text": actual_text}
                     
                     # Add context and generated text for RAG metrics if provided
                     if context_text:
@@ -349,7 +353,7 @@ if run_button and user_text and selected_metrics:
                     
                     # Store results in session state
                     st.session_state.results = result.to_df()
-                    st.session_state.evaluated_text = user_text
+                    st.session_state.evaluated_text = actual_text
                     
                     st.success("✅ Evaluation completed successfully!")
                 else:
