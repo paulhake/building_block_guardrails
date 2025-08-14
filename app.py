@@ -24,8 +24,7 @@ st.set_page_config(
 
 # App title and description
 st.title("🛡️ AI Guardrails Dashboard")
-st.markdown("**Powered by IBM watsonx.governance**")
-st.markdown("Evaluate text content for various safety and quality metrics using advanced AI guardrails.")
+st.markdown("**Powered by IBM watsonx.governance** | Evaluate text content for safety and quality metrics")
 
 # Initialize session state
 if 'results' not in st.session_state:
@@ -167,6 +166,36 @@ def style_results_table(df, threshold):
     
     return df.style.applymap(highlight_high_risk)
 
+# Sidebar - Guardrail Selection
+st.sidebar.header("🛡️ Select Guardrails")
+
+# Content Safety Metrics
+st.sidebar.subheader("Content Safety")
+available_metrics = get_available_metrics()
+selected_metrics = []
+
+for metric_name, metric_info in available_metrics.items():
+    if st.sidebar.checkbox(metric_name, help=metric_info["description"]):
+        selected_metrics.append(metric_info)
+
+# RAG Metrics
+st.sidebar.subheader("RAG Evaluation")
+rag_metrics = get_rag_metrics()
+
+for metric_name, metric_info in rag_metrics.items():
+    if st.sidebar.checkbox(metric_name, help=metric_info["description"]):
+        selected_metrics.append(metric_info)
+
+# Advanced Metrics
+st.sidebar.subheader("Advanced Metrics")
+advanced_metrics = get_advanced_metrics()
+
+for metric_name, metric_info in advanced_metrics.items():
+    if st.sidebar.checkbox(metric_name, help=metric_info["description"]):
+        selected_metrics.append(metric_info)
+
+st.sidebar.markdown("---")
+
 # Sidebar configuration
 st.sidebar.header("⚙️ Configuration")
 
@@ -180,93 +209,60 @@ threshold = st.sidebar.slider(
     help="Values above this threshold will be highlighted in red"
 )
 
-# Reset button
-if st.sidebar.button("🔄 Reset", type="secondary", use_container_width=True):
-    st.session_state.results = None
-    st.session_state.evaluated_text = ""
-    st.rerun()
-
-st.sidebar.markdown("---")
-
 # Main content area
-col1, col2 = st.columns([2, 1])
+st.header("📝 Text Input")
 
-with col1:
-    st.header("📝 Text Input")
-    
-    # Text input area
-    user_text = st.text_area(
-        "Enter text to evaluate:",
-        height=150,
-        placeholder="Type or paste your text here...",
-        help="Enter the text content you want to analyze with AI guardrails"
-    )
-    
-    # Advanced options expander
-    with st.expander("🔧 Advanced Options"):
-        col_a, col_b = st.columns(2)
-        
-        with col_a:
-            system_prompt = st.text_area(
-                "System Prompt (for Topic Relevance & Prompt Safety):",
-                height=100,
-                placeholder="Optional: Enter system prompt for advanced metrics...",
-                help="Required for Topic Relevance and Prompt Safety Risk metrics"
-            )
-        
-        with col_b:
-            context_text = st.text_area(
-                "Context (for RAG metrics):",
-                height=100,
-                placeholder="Optional: Enter context for RAG evaluation...",
-                help="Required for Answer Relevance, Context Relevance, and Faithfulness metrics"
-            )
-            
-            generated_text = st.text_input(
-                "Generated Response (for RAG metrics):",
-                placeholder="Optional: Enter AI-generated response...",
-                help="Required for RAG metrics evaluation"
-            )
+# Text input area
+user_text = st.text_area(
+    "Enter text to evaluate:",
+    height=120,
+    placeholder="Type or paste your text here...",
+    help="Enter the text content you want to analyze with AI guardrails"
+)
 
-with col2:
-    st.header("🛡️ Select Guardrails")
-    
-    # Content Safety Metrics
-    st.subheader("Content Safety")
-    available_metrics = get_available_metrics()
-    selected_metrics = []
-    
-    for metric_name, metric_info in available_metrics.items():
-        if st.checkbox(metric_name, help=metric_info["description"]):
-            selected_metrics.append(metric_info)
-    
-    # RAG Metrics
-    st.subheader("RAG Evaluation")
-    rag_metrics = get_rag_metrics()
-    
-    for metric_name, metric_info in rag_metrics.items():
-        if st.checkbox(metric_name, help=metric_info["description"]):
-            selected_metrics.append(metric_info)
-    
-    # Advanced Metrics
-    st.subheader("Advanced Metrics")
-    advanced_metrics = get_advanced_metrics()
-    
-    for metric_name, metric_info in advanced_metrics.items():
-        if st.checkbox(metric_name, help=metric_info["description"]):
-            selected_metrics.append(metric_info)
+# Buttons row
+col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
 
-# Run guardrails button
-st.markdown("---")
-col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-
-with col_btn2:
+with col_btn1:
     run_button = st.button(
         "🚀 Run Guardrails", 
         type="primary", 
         use_container_width=True,
         disabled=not user_text or not selected_metrics
     )
+
+with col_btn2:
+    if st.button("🔄 Reset", type="secondary", use_container_width=True):
+        st.session_state.results = None
+        st.session_state.evaluated_text = ""
+        st.rerun()
+
+# Advanced options expander
+with st.expander("🔧 Advanced Options"):
+    col_a, col_b = st.columns(2)
+    
+    with col_a:
+        system_prompt = st.text_area(
+            "System Prompt (for Topic Relevance & Prompt Safety):",
+            height=80,
+            placeholder="Optional: Enter system prompt for advanced metrics...",
+            help="Required for Topic Relevance and Prompt Safety Risk metrics"
+        )
+    
+    with col_b:
+        context_text = st.text_area(
+            "Context (for RAG metrics):",
+            height=80,
+            placeholder="Optional: Enter context for RAG evaluation...",
+            help="Required for Answer Relevance, Context Relevance, and Faithfulness metrics"
+        )
+        
+        generated_text = st.text_input(
+            "Generated Response (for RAG metrics):",
+            placeholder="Optional: Enter AI-generated response...",
+            help="Required for RAG metrics evaluation"
+        )
+
 
 # Results section
 if run_button and user_text and selected_metrics:
@@ -317,56 +313,47 @@ if run_button and user_text and selected_metrics:
 # Display results
 if st.session_state.results is not None:
     st.markdown("---")
-    st.header("📊 Guardrail Results")
-    
-    # Show evaluated text
-    with st.expander("📝 Evaluated Text", expanded=False):
-        st.text(st.session_state.evaluated_text)
+    st.subheader("📊 Results")
     
     # Display results table
     results_df = st.session_state.results
     
     if not results_df.empty:
-        st.markdown(f"**Risk Threshold:** {threshold} (values above threshold are highlighted in red)")
-        
-        # Style and display the table
-        styled_df = style_results_table(results_df, threshold)
-        st.dataframe(styled_df, use_container_width=True)
-        
-        # Summary statistics
-        col_stats1, col_stats2, col_stats3 = st.columns(3)
+        # Summary statistics in a compact row
+        col_stats1, col_stats2, col_stats3, col_stats4 = st.columns(4)
         
         with col_stats1:
             high_risk_count = (results_df.select_dtypes(include=['number']) >= threshold).sum().sum()
-            st.metric("High Risk Detections", high_risk_count)
+            st.metric("High Risk", high_risk_count)
         
         with col_stats2:
             max_score = results_df.select_dtypes(include=['number']).max().max()
-            st.metric("Highest Risk Score", f"{max_score:.3f}" if pd.notna(max_score) else "N/A")
+            st.metric("Max Score", f"{max_score:.3f}" if pd.notna(max_score) else "N/A")
         
         with col_stats3:
             avg_score = results_df.select_dtypes(include=['number']).mean().mean()
-            st.metric("Average Risk Score", f"{avg_score:.3f}" if pd.notna(avg_score) else "N/A")
+            st.metric("Avg Score", f"{avg_score:.3f}" if pd.notna(avg_score) else "N/A")
         
-        # Download results
-        csv = results_df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download Results as CSV",
-            data=csv,
-            file_name=f"guardrail_results_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
-            mime="text/csv"
-        )
+        with col_stats4:
+            csv = results_df.to_csv(index=False)
+            st.download_button(
+                label="📥 CSV",
+                data=csv,
+                file_name=f"results_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+        
+        # Compact info line
+        st.caption(f"Risk threshold: {threshold} | Values ≥{threshold} highlighted in red | Text: \"{st.session_state.evaluated_text[:50]}...\"")
+        
+        # Style and display the compact table
+        styled_df = style_results_table(results_df, threshold)
+        st.dataframe(styled_df, use_container_width=True, height=200)
+        
     else:
         st.warning("⚠️ No results to display.")
 
 # Footer
 st.markdown("---")
-st.markdown(
-    """
-    <div style='text-align: center; color: #666;'>
-        <p>Built with ❤️ using Streamlit and IBM watsonx.governance</p>
-        <p><small>Ensure your .env file contains valid WATSONX_APIKEY and WXG_SERVICE_INSTANCE_ID</small></p>
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
+st.caption("Built with Streamlit and IBM watsonx.governance | Ensure .env file contains valid credentials")
