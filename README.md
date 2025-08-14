@@ -101,14 +101,38 @@ WXG_SERVICE_INSTANCE_ID=your_service_instance_id_here
 **Security Note**: Never commit the `.env` file to version control. It's already included in `.gitignore`.
 
 ### 5. Verify Installation
-Start Jupyter and run the main notebook:
+Option A - Run the Streamlit web app:
+```bash
+streamlit run app.py
+```
+
+Option B - Start Jupyter and run the main notebook:
 ```bash
 jupyter notebook "Real Time Detections_v1.ipynb"
 ```
 
 ## Usage
 
-### Quick Start
+### Option 1: Streamlit Web App (Recommended)
+The easiest way to use the guardrails is through the interactive web interface:
+
+```bash
+streamlit run app.py
+```
+
+**Features:**
+- **Interactive UI**: User-friendly web interface
+- **Real-time Evaluation**: Enter text and get instant results
+- **Customizable Guardrails**: Select which metrics to run using checkboxes
+- **Configurable Threshold**: Adjust risk threshold with a slider (default: 0.7)
+- **Color-coded Results**: Red highlighting for high-risk content
+- **Advanced Options**: Support for RAG metrics and system prompts
+- **Export Results**: Download results as CSV
+- **Reset Functionality**: Clear inputs and start fresh
+
+### Option 2: Jupyter Notebook
+For development and experimentation:
+
 1. **Launch Jupyter**: `jupyter notebook` or `jupyter lab`
 2. **Open Main Notebook**: `Real Time Detections_v1.ipynb`
 3. **Run Setup Cells**: Execute the first few cells to load environment and initialize the evaluator
@@ -135,9 +159,16 @@ result = evaluator.evaluate(
 print(result.to_df())
 ```
 
-### Available Notebooks
+### Available Applications
 
-#### `Real Time Detections_v1.ipynb`
+#### `app.py` - Streamlit Web Application
+Interactive web interface for AI guardrails evaluation:
+- User-friendly dashboard with text input and metric selection
+- Real-time guardrail evaluation with color-coded results
+- Configurable risk thresholds and advanced options
+- Export functionality for results
+
+#### `Real Time Detections_v1.ipynb` - Jupyter Notebook
 Comprehensive demonstration of all available guardrail metrics including:
 - Content safety detection examples
 - RAG (Retrieval-Augmented Generation) evaluation metrics
@@ -209,7 +240,8 @@ guardrails_v2/
 ├── CLAUDE.md                      # AI assistant instructions
 ├── README.md                      # This file
 ├── requirements.txt               # Python dependencies
-└── Real Time Detections_v1.ipynb # Main guardrails demonstration
+├── app.py                         # Streamlit web application
+└── Real Time Detections_v1.ipynb # Jupyter notebook demonstration
 ```
 
 ### Contributing
