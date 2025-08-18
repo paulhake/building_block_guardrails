@@ -259,7 +259,6 @@ This repository includes comprehensive educational materials for learning AI gua
 
 #### **For Students/Practitioners:**
 - **`watsonx-guardrails-lab.md`** - Step-by-step lab exercise with practical scenarios
-- **`lab_workbook.ipynb`** - Interactive Jupyter notebook with guided exercises
 - **`health_test.py`** - additional examples for healthcare use cases
 
 #### **For Instructors/Trainers:**
@@ -277,7 +276,7 @@ This repository includes comprehensive educational materials for learning AI gua
 1. **Prerequisites**: Complete the main setup (Environment Setup section above)
 2. **Health Check**: Run `python lab_exercises/health_test.py` to verify connectivity
 3. **Start Learning**: Open `lab_exercises/watsonx-guardrails-lab.md` for guided exercises
-4. **Interactive Practice**: Launch `lab_exercises/lab_workbook.ipynb` for hands-on coding
+4. **Interactive Practice**: Create and run your own notebooks during the lab exercises
 
 Perfect for individual learning, team training, or educational workshops on AI safety and governance.
 
@@ -409,7 +408,6 @@ guardrails_v2/
 │   └── README.md                  # Assets documentation
 ├── lab_exercises/                 # Educational materials and exercises
 │   ├── health_test.py             # Health check script for watsonx services
-│   ├── lab_workbook.ipynb         # Interactive lab workbook
 │   ├── watsonx-guardrails-lab.md  # Lab exercise instructions
 │   ├── watsonx-instructor-guide.md # Teaching guide for instructors
 │   └── watsonx-supplementary-materials.md # Additional learning resources
