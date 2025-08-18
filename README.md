@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/logo.png" alt="IBM Building Blocks AI Guardrails" width="300"/>
+  <img src="assets/design_time_logo.png" alt="IBM Building Blocks AI Guardrails" width="300"/>
 </div>
 
 # IBM Building Block for Trusted AI: Guardrails
@@ -405,7 +405,7 @@ guardrails_v2/
 ├── app.py                         # Streamlit web application
 ├── api_config.ipynb               # API configuration and testing notebook
 ├── assets/                        # Visual assets and branding
-│   ├── logo.png                   # IBM Building Blocks AI Guardrails logo
+│   ├── design_time_logo.png       # IBM Building Blocks AI Guardrails logo
 │   └── README.md                  # Assets documentation
 ├── lab_exercises/                 # Educational materials and exercises
 │   ├── health_test.py             # Health check script for watsonx services
