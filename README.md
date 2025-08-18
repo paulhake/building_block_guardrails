@@ -8,7 +8,61 @@ An advanced AI guardrails implementation using IBM watsonx.governance SDK for co
 
 ## Overview
 
-This project provides real-time AI content safety detection and evaluation using IBM's watsonx.governance platform. It implements multiple guardrail metrics to assess AI-generated content for various risks including hate speech, bias, jailbreak attempts, and other harmful content.
+This project provides comprehensive AI guardrails for both **design time evaluations** and **real-time monitoring** using IBM's watsonx.governance platform. It implements multiple guardrail metrics to assess AI-generated content for various risks including hate speech, bias, jailbreak attempts, and other harmful content.
+
+### Design Time vs Real-Time Evaluations
+
+- **Design Time**: Test and validate prompts, agents, and chatbots **before deployment** to ensure robustness and safety
+- **Real-Time**: Monitor and evaluate AI responses **during production** to catch issues as they occur
+
+This dual approach ensures AI systems are both pre-validated and continuously monitored for optimal safety and performance.
+
+## Understanding the Differences: Design Time vs Real-Time
+
+While both approaches use the same IBM watsonx.governance API and metrics, they serve different purposes and have distinct characteristics:
+
+### Overlapping Capabilities
+Many guardrail metrics work effectively in both contexts:
+- **Content Safety**: HAP, PII, harm detection, bias, profanity
+- **Security**: Jailbreak detection, prompt injection prevention
+- **Basic Quality**: Topic relevance, prompt safety risk
+
+### Key Differences
+
+#### **Design Time Evaluations** (Focus of this Repository)
+- **One-shot Analysis**: Single evaluation per test case without temporal tracking
+- **Reference-based Metrics Available**: Can use ground truth for comprehensive evaluation
+  - **Faithfulness**: Compare responses against known correct information
+  - **Answer Relevance**: Evaluate against expected responses
+  - **Context Relevance**: Assess against curated knowledge bases
+- **Extended Metric Range**: Particularly valuable for agentic systems requiring accuracy validation
+- **Batch Processing**: Test multiple scenarios systematically
+- **Ground Truth Available**: Pre-defined expected outcomes enable deeper analysis
+
+
+#### **Real-Time Monitoring** (Production Use)
+- **Temporal Tracking**: Continuous data storage and evaluation over time
+- **Reference-free Metrics Only**: No ground truth available during live interactions
+  - **Content Safety**: HAP, PII, bias detection
+  - **Security**: Jailbreak, prompt injection detection
+  - **Quality Proxies**: Topic relevance, evasiveness detection
+- **Drift Detection**: Monitor changes in AI behavior patterns over time
+- **Performance Constraints**: Must operate within strict latency requirements
+- **Data Persistence**: Store evaluations for compliance and trend analysis
+
+
+### Repository Focus
+
+**This repository primarily demonstrates design time evaluations** where you can:
+- Test prompts and responses against known ground truth
+- Use the full range of watsonx.governance metrics including reference-based ones
+- Perform comprehensive pre-deployment validation
+- Experiment with different threshold configurations
+
+The same API and techniques can be adapted for real-time monitoring by:
+- Implementing data persistence for temporal tracking using watsonx.governance monitoring module
+- Using primarily reference-free metrics but can periodically upload ground truth which is called "feedback data"
+- The monitoring module includes comprehensive drift detection capabilities
 
 ## Features
 
@@ -117,8 +171,24 @@ jupyter notebook "Real Time Detections_v1.ipynb"
 
 ## Usage
 
+The guardrails system supports two primary use cases:
+
+### Design Time Evaluations
+Perfect for testing prompts, agents, and chatbots before deployment:
+- **Prompt Testing**: Validate system prompts for robustness
+- **Agent Validation**: Test AI agents against various scenarios
+- **Chatbot QA**: Ensure chatbots handle edge cases safely
+- **Pre-deployment Audits**: Comprehensive safety assessment before go-live
+
+### Real-Time Monitoring
+Continuous evaluation during production:
+- **Live Content Screening**: Real-time safety assessment
+- **Response Filtering**: Block or flag problematic outputs
+- **Compliance Monitoring**: Ongoing regulatory compliance
+- **Performance Tracking**: Monitor safety metrics over time
+
 ### Option 1: Streamlit Web App (Recommended)
-The easiest way to use the guardrails is through the interactive web interface:
+The easiest way to use the guardrails for both design time and real-time evaluation:
 
 ```bash
 streamlit run app.py
@@ -126,21 +196,22 @@ streamlit run app.py
 
 **Features:**
 - **Interactive UI**: User-friendly web interface
-- **Real-time Evaluation**: Enter text and get instant results
+- **Instant Evaluation**: Enter text and get immediate results for design time testing
 - **Customizable Guardrails**: Select which metrics to run using checkboxes
 - **Configurable Threshold**: Adjust risk threshold with a slider (default: 0.7)
 - **Color-coded Results**: Red highlighting for high-risk content
 - **Advanced Options**: Support for RAG metrics and system prompts
-- **Export Results**: Download results as CSV
+- **Export Results**: Download results as CSV for design time analysis
 - **Reset Functionality**: Clear inputs and start fresh
 
 ### Option 2: Jupyter Notebook
-For development and experimentation:
+Ideal for design time evaluations, development, and experimentation:
 
 1. **Launch Jupyter**: `jupyter notebook` or `jupyter lab`
 2. **Open Main Notebook**: `Real Time Detections_v1.ipynb`
 3. **Run Setup Cells**: Execute the first few cells to load environment and initialize the evaluator
-4. **Test Guardrails**: Run any of the example cells to test different safety metrics
+4. **Design Time Testing**: Run example cells to test different safety metrics against your content
+5. **Batch Evaluation**: Test multiple prompts or responses simultaneously for comprehensive design time analysis
 
 ### Basic Example
 ```python
@@ -166,18 +237,77 @@ print(result.to_df())
 ### Available Applications
 
 #### `app.py` - Streamlit Web Application
-Interactive web interface for AI guardrails evaluation:
+Interactive web interface for both design time and real-time guardrails evaluation:
 - User-friendly dashboard with text input and metric selection
-- Real-time guardrail evaluation with color-coded results
+- Instant guardrail evaluation with color-coded results for design time testing
 - Configurable risk thresholds and advanced options
-- Export functionality for results
+- Export functionality for design time analysis and compliance reporting
+- Can be integrated into production workflows for real-time monitoring
 
 #### `Real Time Detections_v1.ipynb` - Jupyter Notebook
-Comprehensive demonstration of all available guardrail metrics including:
-- Content safety detection examples
+Comprehensive demonstration of all available guardrail metrics, ideal for design time evaluations:
+- Content safety detection examples for pre-deployment testing
 - RAG (Retrieval-Augmented Generation) evaluation metrics
-- Batch evaluation using metric groups
-- Real-world content analysis examples
+- Batch evaluation using metric groups for systematic design time analysis
+- Real-world content analysis examples for prompt and agent validation
+
+## Design Time Evaluation Workflows
+
+### Pre-Deployment Testing
+Use the guardrails system to validate your AI components before production:
+
+#### 1. Prompt Engineering Validation
+```python
+# Test system prompts for robustness
+system_prompts = [
+    "You are a helpful assistant...",
+    "Act as a professional advisor...",
+    "You are a customer service bot..."
+]
+
+for prompt in system_prompts:
+    result = evaluator.evaluate(
+        data={"input_text": prompt},
+        metrics=[HAPMetric(), BiasMetric(), JailbreakMetric()]
+    )
+    print(f"Prompt safety score: {result.to_df()}")
+```
+
+#### 2. Agent Stress Testing
+```python
+# Test AI agents against challenging scenarios
+test_scenarios = [
+    "Try to get the agent to reveal sensitive information",
+    "Attempt to make the agent ignore its instructions",
+    "Test bias in controversial topics"
+]
+
+for scenario in test_scenarios:
+    # Test your agent's response to each scenario
+    agent_response = your_agent.process(scenario)
+    
+    # Evaluate the response
+    result = evaluator.evaluate(
+        data={"input_text": agent_response},
+        metrics=[HarmMetric(), BiasMetric(), ProfanityMetric()]
+    )
+```
+
+#### 3. Batch Content Analysis
+```python
+# Evaluate multiple content samples simultaneously
+content_samples = ["sample1", "sample2", "sample3"]
+results = []
+
+for content in content_samples:
+    result = evaluator.evaluate(
+        data={"input_text": content},
+        metric_groups=[MetricGroup.CONTENT_SAFETY]
+    )
+    results.append(result.to_df())
+
+# Analyze patterns and thresholds across all samples
+```
 
 ## Configuration
 
