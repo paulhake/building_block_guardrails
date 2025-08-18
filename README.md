@@ -251,6 +251,36 @@ Comprehensive demonstration of all available guardrail metrics, ideal for design
 - Batch evaluation using metric groups for systematic design time analysis
 - Real-world content analysis examples for prompt and agent validation
 
+## Hands-On Lab Materials
+
+This repository includes comprehensive educational materials for learning AI guardrails:
+
+### 📚 Lab Exercises (`lab_exercises/`)
+
+#### **For Students/Practitioners:**
+- **`watsonx-guardrails-lab.md`** - Step-by-step lab exercise with practical scenarios
+- **`lab_workbook.ipynb`** - Interactive Jupyter notebook with guided exercises
+- **`health_test.py`** - additional examples for healthcare use cases
+
+#### **For Instructors/Trainers:**
+- **`watsonx-instructor-guide.md`** - Complete teaching guide with timing, objectives, and solutions
+- **`watsonx-supplementary-materials.md`** - Additional resources, troubleshooting tips, and extended exercises
+
+### 🎯 Lab Features
+- **Hands-on Experience**: Practical exercises with real AI guardrail scenarios
+- **Progressive Learning**: Structured from basic concepts to advanced implementations
+- **Self-Paced**: Complete exercises at your own speed with detailed explanations
+- **Instructor Ready**: Full teaching materials for workshops and training sessions
+- **Industry Scenarios**: Real-world use cases including chatbot safety, content moderation, and compliance
+
+### 🚀 Getting Started with Labs
+1. **Prerequisites**: Complete the main setup (Environment Setup section above)
+2. **Health Check**: Run `python lab_exercises/health_test.py` to verify connectivity
+3. **Start Learning**: Open `lab_exercises/watsonx-guardrails-lab.md` for guided exercises
+4. **Interactive Practice**: Launch `lab_exercises/lab_workbook.ipynb` for hands-on coding
+
+Perfect for individual learning, team training, or educational workshops on AI safety and governance.
+
 ## Design Time Evaluation Workflows
 
 ### Pre-Deployment Testing
@@ -361,8 +391,6 @@ result = evaluator.evaluate(
 ### Getting Help
 
 1. Check [IBM watsonx.governance Documentation](https://ibm.github.io/ibm-watsonx-gov/index.html)
-2. Review IBM Cloud service status
-3. Verify your service instance has the required permissions
 
 ## Development
 
@@ -375,31 +403,24 @@ guardrails_v2/
 ├── README.md                      # This file
 ├── requirements.txt               # Python dependencies
 ├── app.py                         # Streamlit web application
+├── api_config.ipynb               # API configuration and testing notebook
 ├── assets/                        # Visual assets and branding
 │   ├── logo.png                   # IBM Building Blocks AI Guardrails logo
 │   └── README.md                  # Assets documentation
-└── Real Time Detections_v1.ipynb # Jupyter notebook demonstration
+├── lab_exercises/                 # Educational materials and exercises
+│   ├── health_test.py             # Health check script for watsonx services
+│   ├── lab_workbook.ipynb         # Interactive lab workbook
+│   ├── watsonx-guardrails-lab.md  # Lab exercise instructions
+│   ├── watsonx-instructor-guide.md # Teaching guide for instructors
+│   └── watsonx-supplementary-materials.md # Additional learning resources
+└── Real Time Detections_v1.ipynb # Main demonstration notebook
 ```
-
-### Contributing
-1. Follow the existing code style and patterns
-2. Test all changes with the provided notebooks
-3. Update documentation for any new features
-4. Ensure security best practices (no hardcoded credentials)
-
-## Security Considerations
-
-- **API Keys**: Never commit API keys or credentials to version control
-- **Environment Variables**: Use `.env` file for all sensitive configuration
-- **Access Control**: Ensure proper IBM Cloud IAM permissions for watsonx.governance
-- **Key Rotation**: Regularly rotate API keys according to security policies
 
 ## License
 
-[Add appropriate license information]
+Apache
 
 ## Support
 
 For technical support:
 - IBM watsonx.governance: [IBM Support](https://cloud.ibm.com/docs/watsonxgovernance)
-- Project Issues: [Create an issue in this repository]
