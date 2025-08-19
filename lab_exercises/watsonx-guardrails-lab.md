@@ -1,4 +1,4 @@
-# IBM watsonx.governance Building Blocks: Hands-on Guardrails Lab
+# IBM watsonx.governance Building Blocks: Hands-on Design Time Evaluations Lab
 ## 🚀 Student Workbook - 45 Minutes
 
 ---
@@ -6,11 +6,11 @@
 ## Learning Objectives
 
 By the end of this lab, you will be able to:
-- Configure and run IBM watsonx.governance guardrails for both design time and real-time evaluations
+- Configure and run IBM watsonx.governance guardrails for design time evaluations
 - Implement multiple safety detection mechanisms including HAP, PII, bias, and jailbreak detection
 - Perform design time evaluations to test prompts, agents, and chatbots before deployment
 - Test guardrails with real-world scenarios and analyze results
-- Deploy applications for both design time testing and real-time monitoring using Streamlit
+- Deploy applications for both design time testing and to simulate real-time monitoring using Streamlit
 - Understand the trade-offs between safety, performance, and user experience in both pre-deployment and production contexts
 
 ---
@@ -25,12 +25,8 @@ By the end of this lab, you will be able to:
 
 ---
 
-## Lab Workflow
-
-Throughout this lab, you will experience both design time and real-time evaluation workflows:
-
-**Design Time Evaluation Focus:**
-1. Create a new Jupyter notebook called `lab_exercises.ipynb` in VS Code
+**Design Time Evaluation workflow:**
+1. Create a new blank Jupyter notebook called `lab_exercises.ipynb` in VS Code.
 2. Copy code examples from this guide into separate notebook cells
 3. Run each cell to perform design time testing and understand the concepts
 4. Learn how to validate prompts, agents, and content before deployment
@@ -79,13 +75,12 @@ pip install 'ibm-watsonx-gov[metrics]'
 
 ### 1.4 Configure Credentials
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root and add the following variables and keys (obtain from instructor)
 
-```env
+
 WATSONX_APIKEY=your_api_key_here
 WATSONX_URL=https://us-south.ml.cloud.ibm.com
 WXG_SERVICE_INSTANCE_ID=your_instance_id_here
-```
 
 ⚠️ **Security Note**: Never commit the `.env` file to version control!
 
@@ -93,7 +88,7 @@ WXG_SERVICE_INSTANCE_ID=your_instance_id_here
 
 1. Open VS Code in the project directory
 2. Create a new file called `lab_exercises.ipynb`
-3. Select the correct Python environment:
+3. Select the Python environment you created above:
    - Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
    - Type "Python: Select Interpreter"
    - Choose the `guardrails-env` environment you created
@@ -107,6 +102,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Verify environment variables are loaded
+Copy and run this code in a new notebook cell:
+
 assert os.getenv("WATSONX_APIKEY") is not None, "API Key not found!"
 print("✅ Environment configured successfully!")
 
@@ -212,7 +209,7 @@ print(result.to_df())
 
 ### 3.2 Create Your Own Test Cases
 
-**Exercise**: Create 3 test cases for a banking chatbot by copying and modifying this code in a new notebook cell:
+**Exercise**: Create 3 test cases for a banking chatbot by copying and modifying this code in a new notebook cell: (be creative and think of edge cases that might trick the evaluator)
 
 # Test Case 1: Investment advice request
 your_test_1 = """
@@ -239,7 +236,7 @@ for i, test in enumerate(test_cases, 1):
     print(f"\n📋 Test Case {i} Results:")
     print(result.to_df())
 
-### 📝 **Checkpoint 2**: Document which guardrails triggered and why
+### 📝 **Checkpoint 2**: Document and discuss which guardrails triggered and why, highlight any unexpected results and were you able to trick the guardrail?
 
 ---
 
@@ -340,11 +337,13 @@ for prompt in bias_test_prompts:
     print(f"Text: {prompt[:50]}...")
     print(f"Bias Score: {score:.2f} - {'⚠️ Potential Bias' if score > 0.5 else '✅ OK'}\n")
 
-### 📝 **Checkpoint 3**: Which jailbreak attempt was most effective? Why?
+### 📝 **Checkpoint 3a**: Which jailbreak attempt was most effective? Why?
 
+
+### 📝 **Checkpoint 3b**: Can you see how bias may be construed in the nurse example? Why? Is bias subjective?
 ---
 
-## Module 5: Real-time Detection Dashboard (7 minutes)
+## Module 5: Real-time Detection Dashboard Simulation (7 minutes)
 
 ### 5.1 Launch the Streamlit Application
 
@@ -354,7 +353,7 @@ streamlit run app.py
 
 ### 5.2 Interactive Testing Session
 
-Once the dashboard loads, complete these tasks:
+Once the dashboard loads, complete these tasks: enter each scenario then Run the evaluators you selected.
 
 1. **Configure Guardrails**:
    - Select HAP, PII, and Jailbreak detection
@@ -444,13 +443,13 @@ Once the dashboard loads, complete these tasks:
 ## Bonus Challenges (If Time Permits)
 
 ### Challenge 1: Multi-language Testing
-Test guardrails with non-English content to understand limitations.
+Test guardrails with non-English content to understand limitations. Current guardrails are tested for English only, sometimes they will work just fine with other languages but you should experiment.
 
 ### Challenge 2: Custom Metric Group
 Create a metric group for a specific industry (healthcare, finance, education).
 
 ### Challenge 3: Performance Optimization
-Measure latency for different metric combinations and optimize.
+Measure latency for different metric combinations and optimize. (Hint: use Python "time" module in your lab notebook)
 
 ---
 
@@ -460,7 +459,8 @@ Measure latency for different metric combinations and optimize.
 - [Granite Guardian Model Details](https://www.ibm.com/granite)
 - [AI Safety Best Practices](https://www.ibm.com/ai-ethics)
 - [GitHub Repository](https://github.com/paulhake/building_block_guardrails)
-
+- [OWASP Top 10 Security Risks](https://owasp.org/www-project-top-ten/)
+- [Learnprompting Prompt Hacking Guides](https://learnprompting.org/docs/prompt_hacking/introduction)
 ---
 
 ## Lab Feedback

@@ -1,6 +1,6 @@
-# CLAUDE.md
+# PROJECT_SETUP.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides setup guidance and project information for working with this repository.
 
 ## Project Overview
 

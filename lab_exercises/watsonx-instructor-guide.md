@@ -27,7 +27,7 @@
 
 ### Introduction (3 minutes)
 **Key Points to Emphasize:**
-- Real-world importance of AI guardrails
+- Real-world importance of AI guardrails and design time validation
 - Recent examples of AI safety failures (ChatGPT jailbreaks, Bing incidents)
 - IBM's approach vs competitors (AWS Bedrock, Azure AI Safety)
 
@@ -40,7 +40,7 @@
 
 ### New Workflow: VS Code + Jupyter Notebook
 
-**Key Change**: Students now create their own `lab_exercises.ipynb` notebook instead of using the pre-built one.
+**Key Point**: Students create their own `lab_exercises.ipynb` notebook instead of using the pre-built one provided in the github (**do not use Real Time Detections_v1.ipynb**).
 
 #### Teaching Steps:
 1. **Notebook Creation** (2 min): Guide students to create `lab_exercises.ipynb` in VS Code
@@ -60,7 +60,7 @@
 
 ### Instructor Demo Script
 **Show on screen**: Create new notebook and select environment
-```python
+
 # First cell - students copy this exact code
 import os
 from dotenv import load_dotenv
@@ -72,10 +72,9 @@ print("✅ Environment configured successfully!")
 ```
 
 **Teaching Tip**: 
-- Walk around to verify each student has created their notebook correctly
 - Have faster students help neighbors with VS Code setup
 - Emphasize the copy-paste workflow they'll use throughout the lab
-
+- Encourage students to try their own prompts and get them to try and fool the evaluators (offer prizes?)
 ---
 
 ## Module 2: Understanding Components (7 minutes)
@@ -93,9 +92,10 @@ USER INPUT → [GUARDRAILS] → LLM → [GUARDRAILS] → USER OUTPUT
 
 ### Key Concepts to Explain
 
-1. **Synchronous vs Asynchronous Guardrails**
-   - Sync: Block before processing (jailbreak detection)
-   - Async: Post-process for logging (bias detection)
+1. **Design Time vs Run timey Guardrails/Evaluators**
+   - Design Time: Testing before deployment/production, one shot or iterative (red teaming))
+   - Monitoring/Run Time: Monitoring continuous evaluation, stores trends over time, can include Drift (standard in wx.gov), shares metrics with Design Time but all metrics for run time must be reference free (no ground truth available run time)
+   - This lab focuses on Design Time but simulates run time with Streamlit app later in the lab
 
 2. **Threshold Trade-offs**
    - Low threshold (0.3): More false positives, safer
@@ -123,7 +123,7 @@ USER INPUT → [GUARDRAILS] → LLM → [GUARDRAILS] → USER OUTPUT
 - Show students how to copy code from the lab guide
 - Demonstrate creating new notebook cells for design time testing
 - Run the normal query together and explain the output DataFrame
-- Emphasize: "This is how you'd test your system before going live"
+- Emphasize: "This is how you'd test your system initially before moving to file, programatic, or API driven input"
 
 **Step 2: Guided Practice (3 min)**
 - Students copy and run frustrated customer case in new cells
@@ -277,36 +277,10 @@ Each pair shares their most interesting finding (30 seconds each)
 
 ---
 
-## Assessment Rubric
-
-### Checkpoint Verification
-
-| Checkpoint | Excellent | Good | Needs Improvement |
-|------------|-----------|------|-------------------|
-| Environment Setup | Helps others | Completes solo | Needs assistance |
-| Guardrail Testing | Creates edge cases | Runs all tests | Runs some tests |
-| Jailbreak Detection | Finds bypass | Understands levels | Runs examples |
-| Dashboard Use | Explores features | Completes tasks | Basic interaction |
-| Discussion | Leads conversation | Contributes | Listens only |
-
-### Participation Metrics
-- Questions asked: Target 2-3 per student
-- Code executed: Minimum 10 cells
-- Test cases created: Minimum 3 original
-- Discussion contributions: At least 1 insight
-
----
-
 ## Troubleshooting Guide
 
 ### Common Technical Issues
 
-**Issue: Rate Limiting**
-```python
-# Solution: Add delay between calls
-import time
-time.sleep(1)  # Add between evaluations
-```
 
 **Issue: Authentication Failure**
 ```python
@@ -317,19 +291,11 @@ print(f"URL: {os.getenv('WATSONX_URL')}")
 ```
 
 **Issue: Import Errors**
-```bash
+
 # Solution: Reinstall specific package
 pip uninstall ibm-watsonx-gov
 pip install 'ibm-watsonx-gov[metrics]'
-```
 
-**Issue: Jupyter Kernel Dies**
-```python
-# Solution: Reduce batch size
-# Instead of processing all at once
-for item in items[:5]:  # Process first 5 only
-    process(item)
-```
 
 **Issue: VS Code Can't Find Python Environment**
 - Solution: Press Ctrl+Shift+P → "Python: Select Interpreter" → Choose guardrails-env
@@ -359,120 +325,28 @@ for item in items[:5]:  # Process first 5 only
 ### For Fast Finishers
 
 1. **Custom Metric Creation**
-```python
+
 # Challenge: Create a metric for medical advice detection
 def medical_advice_detector(text):
     medical_terms = ['prescription', 'diagnosis', 'treatment']
     return any(term in text.lower() for term in medical_terms)
-```
 
 2. **Performance Profiling**
-```python
+
 import time
 metrics = [HAPMetric(), PIIMetric(), JailbreakMetric()]
 for metric in metrics:
     start = time.time()
     evaluator.evaluate(data, metrics=[metric])
     print(f"{metric}: {time.time()-start:.3f}s")
-```
-
-3. **Threshold Optimization**
-- Create ROC curve for different thresholds
-- Find optimal threshold for their use case
-
-### For Struggling Students
-
-1. **Simplified Exercise**
-- Provide pre-written test cases
-- Focus on interpretation rather than creation
-
-2. **Pair Programming**
-- Match with stronger student
-- Assign specific roles (driver/navigator)
-
-3. **Visual Learning**
-- Draw flowcharts of guardrail process
-- Use analogies (security checkpoint, spam filter)
-
 ---
-
-## Post-Lab Resources
-
-### Homework Assignment (Optional)
-"Implement guardrails for your own use case. Document which metrics you chose and why. Test with 10 real examples."
-
-### Further Reading
-1. IBM Granite Guardian Technical Paper
-2. OWASP Top 10 for LLMs
-3. EU AI Act Compliance Guidelines
-
----
-
-## Key Changes Summary
-
-### New Workflow (Updated)
-✅ **Students create `lab_exercises.ipynb` in VS Code**  
-✅ **Students select Python environment (`guardrails-env`)**  
-✅ **Students copy clean Python code (no markdown fences) into notebook cells**  
-✅ **Instructor emphasizes copy-paste workflow throughout**
-
-### What's Different for Instructors
-- **Setup Phase**: Help students with VS Code environment selection
-- **Code Execution**: Students copy from guide rather than using pre-built notebook
-- **Troubleshooting**: New VS Code and Jupyter extension issues to watch for
-- **Teaching**: Emphasize that code blocks are ready to copy-paste
 
 ### Instructor Checklist for Each Module
 - [ ] Remind students to create new notebook cells
 - [ ] Verify students are copying clean Python code (no ```python fences)
 - [ ] Walk around to check VS Code environment selection
 - [ ] Ensure students understand copy-paste workflow
-4. Stanford HAI Safety Benchmarks
 
-### Related Labs
-- Next Week: "Implementing RAG with Guardrails"
-- Advanced: "Custom Metric Development"
-- Architecture: "Scaling Guardrails to Production"
-
----
-
-## Instructor Reflection Questions
-
-After the session, consider:
-1. Which module took longer than expected?
-2. What questions stumped you?
-3. Which examples resonated most?
-4. How was the pacing?
-5. What would you change next time?
-
----
-
-## Sample Slide Deck Outline
-
-### Slide 1: Title
-"Building Safe AI with watsonx.governance"
-
-### Slide 2: Why Guardrails?
-- Image: Recent AI failure headline
-- Stat: "73% of organizations cite AI safety as top concern"
-
-### Slide 3: Types of Risks
-- Pyramid diagram: PII > Bias > Toxicity > Jailbreaks
-
-### Slide 4: IBM's Approach
-- Comparison table with AWS, Azure, Open Source
-
-### Slide 5: Today's Journey
-- Timeline of modules with icons
-
----
-
-## Emergency Backup Plans
-
-### If watsonx.governance is down:
-1. Use cached responses (provide JSON files)
-2. Focus on code review and discussion
-3. Demonstrate with recorded video
 
 ### If >50% students have setup issues:
 1. Switch to demo mode
@@ -483,35 +357,4 @@ After the session, consider:
 1. Skip Module 4 RAG section
 2. Combine Modules 5 & 6
 3. Provide take-home exercises
-
 ---
-
-## Success Metrics
-
-### Immediate (End of Lab)
-- 90% complete all checkpoints
-- 80% participate in discussion
-- 100% run at least one guardrail
-
-### Follow-up (1 Week)
-- 50% implement in their own project
-- 30% share findings with team
-- 20% contribute improvements
-
----
-
-## Notes Section
-
-*Space for instructor observations during the session:*
-
-**What worked well:**
-_________________________________
-
-**What needs improvement:**
-_________________________________
-
-**Student questions to address next time:**
-_________________________________
-
-**Technical issues encountered:**
-_________________________________
